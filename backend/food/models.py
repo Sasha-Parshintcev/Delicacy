@@ -4,8 +4,9 @@ from django.core.validators import MinValueValidator
 
 User = get_user_model()
 
-TEXT_LENGTH_LIMIT = 20
-MODEL_LENGTH_LIMIT = 35
+TEXT_LENGTH_LIMIT = 35
+MODEL_LENGTH_LIMIT = 30
+MIN_COOK_TIME = 15
 
 
 class Category(models.Model):
@@ -53,3 +54,55 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return self.name[:TEXT_LENGTH_LIMIT]
+    
+
+class Dish(models.Model):
+    """Модель блюда."""
+    name = models.CharField(
+        'Название блюда',
+        help_text='Например "От шефа (если речь про шаурму)"',
+        max_length=MODEL_LENGTH_LIMIT
+    )
+    image = models.ImageField(
+        'Изображение',
+        help_text='Загрузите изображение для блюда',
+        upload_to='dishes/',
+        null=True,
+        default=None
+    )
+    text = models.TextField(
+        'Описание',
+        help_text='Описание блюда'
+    )
+    ingredients = models.ManyToManyField(
+        Ingredient,
+        verbose_name='Ингредиенты',
+        related_name='dishes',
+        help_text='Ингредиенты в составе блюда'
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='dishes',
+        verbose_name='Категория',
+        help_text='Можно установить несколько тегов на один рецепт'
+    )
+    cooking_time = models.PositiveSmallIntegerField(
+        'Время приготовления',
+        help_text='Введите время приготовления',
+        validators=(
+            MinValueValidator(
+                MIN_COOK_TIME,
+                f'Минимальное время: {MIN_COOK_TIME} минут'
+            ),
+        )
+    )
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Блюдо'
+        verbose_name_plural = 'Блюда'
+
+    def __str__(self):
+        return f'{self.name}\n{self.text[:TEXT_LENGTH_LIMIT]}'
