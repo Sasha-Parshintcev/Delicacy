@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 
 User = get_user_model()
 
@@ -23,9 +24,32 @@ class Category(models.Model):
     )
 
     class Meta:
+        ordering = ('name',)
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+        
+    def __str__(self):
+        return self.name[:TEXT_LENGTH_LIMIT]
+    
+
+class Ingredient(models.Model):
+    """Модель ингредиента для блюда."""
+    name = models.CharField(
+        'Название ингредиента',
+        help_text='Названия ингридинта для блюда',
+        max_length=MODEL_LENGTH_LIMIT,
+    )
+
+    class Meta:
         ordering = ('name',)
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=('name',),
+                name='unique_ingredient',
+            )
+        ]
 
     def __str__(self):
         return self.name[:TEXT_LENGTH_LIMIT]
