@@ -5,6 +5,18 @@ from food.models import (
 )
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    """Сериализатор для запросов к Category."""
+
+    class Meta:
+        model = Category
+        fields = (
+            'id',
+            'name',
+            'slug'
+        )
+        
+
 class IngredientSerializer(serializers.ModelSerializer):
     """Сериализатор для запросов к Ingredient."""
 
