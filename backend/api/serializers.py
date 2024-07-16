@@ -26,3 +26,21 @@ class IngredientSerializer(serializers.ModelSerializer):
             'id',
             'name'
         )
+
+
+class DishSerializer(serializers.ModelSerializer):
+    """Сериализатор для запросов к Dish."""
+    ingredients = IngredientSerializer(many=True) # source='',
+    category = CategorySerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Dish
+        fields = (
+            'id',
+            'category',
+            'ingredients',
+            'name',
+            'image',
+            'text',
+            'cooking_time'
+        )
