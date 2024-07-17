@@ -106,3 +106,25 @@ class Dish(models.Model):
 
     def __str__(self):
         return f'{self.name}\n{self.text[:TEXT_LENGTH_LIMIT]}'
+    
+    
+class DishIngredient(models.Model):
+    """Модель ингредиентов для блюда."""
+    dish = models.ForeignKey(
+        Dish,
+        related_name='ingredient_in_dish',
+        verbose_name='Блюдо',
+        on_delete=models.CASCADE
+    )
+    ingredient = models.ForeignKey(
+        Ingredient,
+        related_name='dish_in_ingredient',
+        verbose_name='Ингредиент',
+        on_delete=models.CASCADE
+    )
+    class Meta:
+        verbose_name = 'Ингредиенты блюда'
+        verbose_name_plural = 'Ингредиенты блюд'
+
+    def __str__(self):
+        return f'{self.dish} - {self.ingredient}'

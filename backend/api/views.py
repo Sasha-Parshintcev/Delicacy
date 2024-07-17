@@ -1,4 +1,7 @@
 from rest_framework import viewsets, mixins
+from rest_framework.permissions import (
+    SAFE_METHODS
+)
 
 from food.models import (
     Category,
@@ -8,13 +11,21 @@ from food.models import (
 from .serializers import (
     CategorySerializer,
     IngredientSerializer,
-    DishSerializer
+    DishSerializer,
+    DishCreateSerializer
 )
 
 
 class DishViewSet(viewsets.ModelViewSet):
     queryset = Dish.objects.all()
-    serializer_class = DishSerializer
+    
+    def get_queryset(self):
+        return Dish.objects.prefetch_related('ingredients', 'category').all()
+
+    def get_serializer_class(self, *args, **kwargs):
+        if self.request.method in SAFE_METHODS:
+            return DishSerializer
+        return DishCreateSerializer
     
     
 class CategoryViewSet(
