@@ -78,6 +78,7 @@ class Dish(models.Model):
         Ingredient,
         verbose_name='Ингредиенты',
         related_name='dishes',
+        # through='DishIngredient',
         help_text='Ингредиенты в составе блюда'
     )
     category = models.ForeignKey(
@@ -87,7 +88,7 @@ class Dish(models.Model):
         blank=True,
         related_name='dishes',
         verbose_name='Категория',
-        help_text='Можно установить несколько тегов на один рецепт'
+        help_text='Можно установить одну категорию на одно блюдо'
     )
     cooking_time = models.PositiveSmallIntegerField(
         'Время приготовления',

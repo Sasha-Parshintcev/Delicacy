@@ -18,6 +18,8 @@ from .serializers import (
 
 class DishViewSet(viewsets.ModelViewSet):
     queryset = Dish.objects.all()
+    # serializer_class = DishSerializer
+    # http_method_names = ('get', 'post', 'patch', 'delete')
     
     def get_queryset(self):
         return Dish.objects.prefetch_related('ingredients', 'category').all()

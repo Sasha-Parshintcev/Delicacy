@@ -40,21 +40,21 @@ class IngredientSerializer(serializers.ModelSerializer):
         )
 
 
-class DishSerializer(serializers.ModelSerializer):
-    """Сериализатор для запросов к Dish."""
-    ingredients = IngredientSerializer(many=True) # source='',
-    category = CategorySerializer(many=True, read_only=True)
+
+class DishIngredientSerializer(serializers.ModelSerializer):
+    """Сериализатор для запросов к DishIngredient."""
+    id = serializers.ReadOnlyField(
+        source='ingredient.id'
+    )
+    name = serializers.ReadOnlyField(
+        source='ingredient.name'
+    )
 
     class Meta:
-        model = Dish
+        model = DishIngredient
         fields = (
             'id',
-            'category',
-            'ingredients',
-            'name',
-            'image',
-            'text',
-            'cooking_time'
+            'name'
         )
 
 
@@ -69,6 +69,27 @@ class DishIngredientWriteSerializer(serializers.ModelSerializer):
         )
 
 
+class DishSerializer(serializers.ModelSerializer):
+    """Сериализатор для запросов к Dish."""
+    ingredients = DishIngredientSerializer(
+        source='ingredient_in_dish',
+        many=True
+    )
+    category = CategorySerializer(read_only=True)
+
+    class Meta:
+        model = Dish
+        fields = (
+            'id',
+            'category',
+            'ingredients',
+            'name',
+            'image',
+            'text',
+            'cooking_time'
+        )
+
+
 class DishCreateSerializer(serializers.ModelSerializer):
     """Сериализатор для добаления/обновления блюда."""
     image = Base64ImageField()
@@ -76,6 +97,12 @@ class DishCreateSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),
     )
+    # ingredients = serializers.ListField(
+    #     child=serializers.DictField(),
+    #     write_only=True,
+    #     required=True,
+    #     allow_empty=False
+    # )
 
     class Meta:
         model = Dish
