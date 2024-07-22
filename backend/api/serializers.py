@@ -155,3 +155,13 @@ class UserSerializer(UserSerializer):
     def create(self, validated_data):
         """Создает нового пользователя с указанными данными."""
         return User.objects.create_user(**validated_data)
+
+
+class AvatarSerializer(serializers.Serializer):
+    """Сериализатор аватара."""
+    avatar = Base64ImageField(required=True, allow_null=True)
+
+    class Meta:
+        fields = (
+            'avatar'
+        )
