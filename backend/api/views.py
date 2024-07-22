@@ -1,3 +1,4 @@
+import os
 from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import (
     SAFE_METHODS,
@@ -18,7 +19,8 @@ from .serializers import (
     IngredientSerializer,
     DishSerializer,
     DishCreateSerializer,
-    UserSerializer
+    UserSerializer,
+    AvatarSerializer
 )
 
 # Право изменять блюдо доступно только администратору
@@ -68,3 +70,36 @@ class UserViewSet(djoser_views.UserViewSet):
             context={'request': request}
         )
         return Response(serializer.data)
+
+    @action(
+        methods=('put', 'delete'),
+        detail=False,
+        url_path='me/avatar'
+    )
+    def avatar(self, request):
+        user = request.user
+        if not user.is_authenticated:
+            return Response(
+                {'detail': 'Учетные данные аутентификации не предоставлены.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        serializer = AvatarSerializer(data=request.data)
+        if request.method == 'PUT':
+            if serializer.is_valid():
+                user.avatar = serializer.validated_data['avatar']
+                user.save()
+                return Response(
+                    {"avatar": os.getenv('HOST', '/.env')},
+                    status=status.HTTP_200_OK
+                )
+            else:
+                return Response(
+                    serializer.errors,
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        elif request.method == 'DELETE':
+            user.avatar = None
+            user.save()
+            return Response(
+                status=status.HTTP_204_NO_CONTENT
+            )
