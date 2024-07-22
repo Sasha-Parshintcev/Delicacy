@@ -1,10 +1,12 @@
 from rest_framework import serializers
 from django.core.files.base import ContentFile
+from djoser.serializers import UserSerializer
 import base64
 
 from food.models import (
     Category, Ingredient, Dish, DishIngredient
 )
+from user.models import User
 
 
 class Base64ImageField(serializers.ImageField):
@@ -132,3 +134,24 @@ class DishCreateSerializer(serializers.ModelSerializer):
             context={'request': self.context.get('request')}
         ).data
 
+
+class UserSerializer(UserSerializer):
+    """Сериализатор пользователя."""
+    avatar = Base64ImageField(required=False, allow_null=True, read_only=True)
+    extra_kwargs = {'password': {'write_only': True},
+                    'is_subscribed': {'read_only': True}}
+
+    class Meta:
+        model = User
+        fields = (
+            'email',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'avatar'
+        )
+
+    def create(self, validated_data):
+        """Создает нового пользователя с указанными данными."""
+        return User.objects.create_user(**validated_data)
