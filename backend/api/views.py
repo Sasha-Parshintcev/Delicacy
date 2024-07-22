@@ -1,6 +1,7 @@
 from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import (
-    SAFE_METHODS
+    SAFE_METHODS,
+    IsAuthenticated
 )
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -56,3 +57,14 @@ class IngredientViewSet(
 class UserViewSet(djoser_views.UserViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    
+    @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,)
+    )
+    def me(self, request):
+        serializer = UserSerializer(
+            instance=request.user,
+            context={'request': request}
+        )
+        return Response(serializer.data)
