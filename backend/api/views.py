@@ -1,8 +1,12 @@
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import (
     SAFE_METHODS
 )
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from djoser import views as djoser_views
 
+from user.models import User
 from food.models import (
     Category,
     Ingredient,
@@ -12,7 +16,8 @@ from .serializers import (
     CategorySerializer,
     IngredientSerializer,
     DishSerializer,
-    DishCreateSerializer
+    DishCreateSerializer,
+    UserSerializer
 )
 
 # Право изменять блюдо доступно только администратору
@@ -46,3 +51,8 @@ class IngredientViewSet(
 ):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    
+    
+class UserViewSet(djoser_views.UserViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
