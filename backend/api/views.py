@@ -15,7 +15,7 @@ from .serializers import (
     DishCreateSerializer
 )
 
-
+# Право изменять блюдо доступно только администратору
 class DishViewSet(viewsets.ModelViewSet):
     queryset = Dish.objects.all()
     # serializer_class = DishSerializer
