@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.auth.validators import UnicodeUsernameValidator
 
 
@@ -42,6 +42,20 @@ class User(AbstractUser):
         upload_to='users/',
         blank=True,
         default=None
+    )
+    groups = models.ManyToManyField(
+        Group,
+        verbose_name=('groups'),
+        blank=True,
+        help_text =('Группы, к которым принадлежит этот пользователь'),
+        related_name='custom_user_group'
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        verbose_name=('user permissions'),
+        blank=True,
+        help_text=('Особые разрешения для этого пользователя'),
+        related_name='custom_user_permissions'
     )
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username', 'first_name', 'last_name')
