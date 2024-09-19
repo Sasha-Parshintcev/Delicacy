@@ -4,6 +4,7 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 
 
 TEXT_LENGTH_LIMIT = 20
+MAX_LENGTH_MODEL = 150
 
 
 class User(AbstractUser):
@@ -13,12 +14,12 @@ class User(AbstractUser):
     """
     email = models.EmailField(
         'email-адрес',
-        max_length=254,
+        max_length=MAX_LENGTH_MODEL,
         unique=True,
     )
     username = models.CharField(
         'Логин',
-        max_length=150,
+        max_length=MAX_LENGTH_MODEL,
         validators=[UnicodeUsernameValidator()],
         unique=True,
         error_messages={
@@ -27,15 +28,15 @@ class User(AbstractUser):
     )
     first_name = models.CharField(
         'Имя',
-        max_length=150
+        max_length=MAX_LENGTH_MODEL
     )
     last_name = models.CharField(
         'Фамилия',
-        max_length=150
+        max_length=MAX_LENGTH_MODEL
     )
     password = models.CharField(
         'Пароль',
-        max_length=150,
+        max_length=MAX_LENGTH_MODEL,
     )
     avatar = models.ImageField(
         'аватар',
