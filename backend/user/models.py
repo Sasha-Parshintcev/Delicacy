@@ -16,7 +16,7 @@ class User(AbstractUser):
     что позволяет улучшить безопасность
     и облегчить процесс восстановления пароля.
     """
-     email = models.EmailField(
+    email = models.EmailField(
         'email-адрес',
         max_length=254,
         unique=True,
