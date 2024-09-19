@@ -2,6 +2,7 @@ import os
 from rest_framework import viewsets, mixins, status
 from rest_framework.permissions import (
     SAFE_METHODS,
+    IsAuthenticatedOrReadOnly,
     IsAuthenticated
 )
 from rest_framework.response import Response
@@ -57,14 +58,33 @@ class IngredientViewSet(
     
     
 class UserViewSet(djoser_views.UserViewSet):
+    """
+    Вьюсет для работы с пользователями.
+
+    Реализует следующие действия:
+    - Получение информации о текущем пользователе
+    - Обновление аватара
+
+    Особенности:
+    - Используется модель User
+    - Применяется сериализатор UserSerializer
+    - Доступ разрешен для всех пользователей на чтение и
+      для аутентифицированных на изменение
+      (permission_classes = (IsAuthenticatedOrReadOnly,))
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
     
     @action(
         detail=False,
-        permission_classes=(IsAuthenticated,)
+        permission_classes=(IsAuthenticatedOrReadOnly,)
     )
     def me(self, request):
+        """
+        Получить информацию о текущем аутентифицированном пользователе.
+        Данный метод возвращает данные пользователя в формате JSON. 
+        Доступ к методу имеют только аутентифицированные пользователи.
+        """
         serializer = UserSerializer(
             instance=request.user,
             context={'request': request}
@@ -77,6 +97,12 @@ class UserViewSet(djoser_views.UserViewSet):
         url_path='me/avatar'
     )
     def avatar(self, request):
+        """
+        Обновить или удалить аватар текущего аутентифицированного пользователя.
+        Данная функция позволяет аутентифицированному пользователю
+        загружать новый аватар (метод PUT) или удалять существующий
+        аватар (метод DELETE).
+        """
         user = request.user
         if not user.is_authenticated:
             return Response(
